@@ -8,7 +8,7 @@ import time
 import datetime
 import tkinter as tk
 
-ruta = "https://www.hayabusafight.com/products/hayabusa-ascend-lightweight-jiu-jitsu-gi?variant=37799664943286"
+ruta = "https://www.hayabusafight.com/products/hayabusa-ascend-lightweight-jiu-jitsu-gi?variant=37799664976054"
 
 if __name__ == '__main__':
     tiempo1 = datetime.datetime.now()
@@ -33,8 +33,7 @@ if __name__ == '__main__':
         print('No hay piezas disponibles')
     else:
         print('No se reconoce texto')
-    time.sleep(3)
     driver.quit()
     tiempo2 = datetime.datetime.now()
-    delta = tiempo2 - tiempo1
+    delta = str(tiempo2 - tiempo1).split('.')[0]
     print(f'Tiempo de ejecucion total {delta}')
