@@ -7,32 +7,37 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 import datetime
 import tkinter as tk
+import sqlite3
 
-ruta = "https://www.hayabusafight.com/products/hayabusa-ascend-lightweight-jiu-jitsu-gi?variant=37799664976054"
+ruta = "https://www.mercadolibre.com.mx/motocicleta-chopper-italika-tc-300-negra/up/MLMU3007051693"
+
+
+def guardar_datos(fecha, precio):
+    conexion = sqlite3.connect('datos.db')
+    cursor = conexion.cursor()
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS motocicleta(
+    fecha TEXT,
+    precio INTEGER
+    )
+    ''')
+    cursor.execute("INSERT INTO motocicleta (fecha, precio) VALUES (?, ?)", (fecha, precio))
+    conexion.commit()
+    conexion.close()
+
 
 if __name__ == '__main__':
     tiempo1 = datetime.datetime.now()
-    print(f'Probando selenium en {tiempo1}')
+    fecha = str(tiempo1).split('.')[0]
     service = Service(ChromeDriverManager().install())
     options = webdriver.ChromeOptions()
     options.add_argument("--windows-size=1280,720")
     driver = Chrome(service=service, options=options)
     driver.get(ruta)
-    elemento = driver.find_element(By.ID, "add_to_cart")
-    texto = elemento.text
-    print(f'Texto obtenido {texto}')
-    if "ADD TO CART" in texto:
-        print('Hay piezas disponibles')
-        root = tk.Tk()
-        root.title("Stock disponible")
-        root.geometry("260x60")
-        etiqueta = tk.Label(root, text="Ya hay Gis disponibles")
-        etiqueta.pack(pady=20, padx=20)
-        root.mainloop()
-    elif "SOLD OUT" in texto:
-        print('No hay piezas disponibles')
-    else:
-        print('No se reconoce texto')
+    elemento = driver.find_element(By.CLASS_NAME, "ui-pdp-price__second-line")
+    precio = elemento.text.split('\n')[1].replace(',', '')
+    print(f"Este es el precio obtenido {int(precio)} en {fecha}")
+    guardar_datos(fecha, precio)
     driver.quit()
     tiempo2 = datetime.datetime.now()
     delta = str(tiempo2 - tiempo1).split('.')[0]
