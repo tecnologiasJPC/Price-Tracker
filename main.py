@@ -1,3 +1,5 @@
+import time
+
 from selenium import webdriver
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.service import Service
@@ -31,6 +33,7 @@ if __name__ == '__main__':
     options.add_argument("--windows-size=1280,720")
     driver = Chrome(service=service, options=options)
     driver.get(ruta)
+    time.sleep(1)
     elemento = driver.find_element(By.CLASS_NAME, "ui-pdp-price__second-line")
     precio = elemento.text.split('\n')[1].replace(',', '')
     print(f"Este es el precio obtenido {int(precio)} en {fecha}")
