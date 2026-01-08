@@ -8,6 +8,8 @@ import undetected_chromedriver as ch
 import datetime
 import sqlite3
 
+
+# link for the product to be monitored
 ruta = "https://www.mercadolibre.com.mx/motocicleta-chopper-italika-tc-300-negra/up/MLMU3007051693"
 
 
