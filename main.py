@@ -8,6 +8,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as ch
 import datetime
 import sqlite3
+import time
 
 
 # link for the product to be monitored
@@ -30,7 +31,7 @@ def open_webpages():    # open the webpage to get the price of the product in Me
     options = webdriver.ChromeOptions()
     options.add_argument("--windows-size=1280,720")
     #options.add_argument("--headless")
-    driver = ch.Chrome(options=options)
+    driver = ch.Chrome(options=options, version_main=144)
     driver.get(ruta)
     wait = WebDriverWait(driver, 10)
     try:
@@ -38,7 +39,7 @@ def open_webpages():    # open the webpage to get the price of the product in Me
         element = driver.find_element(By.CLASS_NAME, "ui-pdp-price__second-line")
         price = element.text.split('\n')[1].replace(',', '')
         print(f"This is current price ${int(price)} at {date}")
-        #save_data(date, int(price))
+        save_data(date, int(price))
     except TimeoutError:
         print(f"El tiempo de espera se excedio")
     finally:
