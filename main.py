@@ -9,14 +9,16 @@ import undetected_chromedriver as ch
 import datetime
 import sqlite3
 import time
-
+import os
+import sys
 
 # link for the product to be monitored
 ruta = "https://www.mercadolibre.com.mx/motocicleta-chopper-italika-tc-300-negra/up/MLMU3007051693"
 
 
 def save_data(date: str, price: int):   # save the data in a database file
-    connection = sqlite3.connect('datos.db')
+    datos = os.path.dirname(__file__) + 'datos.db'
+    connection = sqlite3.connect(datos)
     cursor = connection.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS motocicleta(fecha TEXT,precio INTEGER)")
     cursor.execute("INSERT INTO motocicleta (fecha, precio) VALUES (?, ?)", (date, price))
