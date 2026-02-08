@@ -17,7 +17,7 @@ ruta = "https://www.mercadolibre.com.mx/motocicleta-chopper-italika-tc-300-negra
 
 
 def save_data(date: str, price: int):   # save the data in a database file
-    data = os.path.join(os.path.dirname(__file__), 'datos.db')
+    data = os.path.join(os.path.dirname(__file__), 'datos.db')  # it is required to define absolute path
     connection = sqlite3.connect(data)
     cursor = connection.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS motocicleta(fecha TEXT,precio INTEGER)")
