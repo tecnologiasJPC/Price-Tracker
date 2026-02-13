@@ -17,6 +17,7 @@ import numpy as np
 
 # link for the product to be monitored
 ruta = "https://www.mercadolibre.com.mx/motocicleta-chopper-italika-tc-300-negra/up/MLMU3007051693"
+ruta2 = "https://www.mercadolibre.com.mx/apple-macbook-air-m4-mw0w3bza-gris-oscuro-16-gb-256-gb-240-hz-2560-px-x-1664-px-apple-macos-m4-m4-macos-air-m4-air-apple-air-m4-gpu-de-8-nucleos-neural-engine-apple-macbook-air-apple-m4-macbook-air-m4/p/MLM53449012?product_trigger_id=MLM54109556&picker=true&quantity=1"
 
 
 def save_data(date: str, price: int):   # save the data in a database file
@@ -121,13 +122,27 @@ class MercadoLibrePage(BasePage):
         return text_price.text.split('\n')[1].replace(',', '')
 
 
+class AmazonPage(BasePage):
+    __locator = By.CLASS_NAME
+    __name = "a-price-whole"
+
+    def get_price(self):
+        super().open_page(self.link)
+        text_price = super().find_element(self.__locator, self.__name)
+        return text_price
+
+
 if __name__ == '__main__':
     #open_webpages()
     #graph_data()
     options = webdriver.ChromeOptions()
     driver = ch.Chrome(options=options, version_main=144)
     driver.maximize_window()
-    pagML = BasePage(driver, ruta)
-    precio = pagML.get_price()
-    pagML.close_browser()
-    print(f"Este es el precio obtenido: {precio}")
+    pag1 = MercadoLibrePage(driver, ruta)
+    price = pag1.get_price()
+    pag1.close_browser()
+    moment = datetime.datetime.now()
+    date = str(moment).split('.')[0]
+    print(f"Para la fecha {date} el precio obtenido es {price}")
+    save_data(date, int(price))
+
