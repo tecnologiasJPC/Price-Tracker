@@ -3,7 +3,7 @@ from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as ch
 import pandas as pd
@@ -40,7 +40,7 @@ def open_webpages():    # open the webpage to get the price of the product in Me
     driver.get(ruta)
     wait = WebDriverWait(driver, 10)
     try:
-        wait.until(ec.presence_of_element_located((By.CLASS_NAME, "ui-pdp-price__second-line")))
+        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "ui-pdp-price__second-line")))
         element = driver.find_element(By.CLASS_NAME, "ui-pdp-price__second-line")
         price = element.text.split('\n')[1].replace(',', '')
         print(f"This is current price ${int(price)} at {date}")
@@ -83,13 +83,24 @@ def graph_data():
 
 
 class BasePage:
-    def __init__(self, driver):
+
+    def __new__(cls, driver, liga):
+        if 'mercadolibre' in liga:
+            return super(BasePage, MercadoLibrePage).__new__(MercadoLibrePage)
+        return super(BasePage, cls).__new__(cls)
+
+    def __init__(self, driver, liga):
         self.__driver = driver
         self.__wait = WebDriverWait(driver, 3)
+        self.link = liga
+        self.open_page(liga)
+
+    def open_page(self, link):
+        self.__driver.get(link)
 
     def find_element(self, method, name):
         try:
-            return self.__driver.find_element(method, name)
+            return self.__wait.until(EC.presence_of_element_located((method, name)))
         except TimeoutError:
             print(f"Element {name} is not found")
 
@@ -100,6 +111,23 @@ class BasePage:
         self.__driver.quit()
 
 
+class MercadoLibrePage(BasePage):
+    __locator = By.CLASS_NAME
+    __name = "ui-pdp-price__second-line"
+
+    def get_price(self):
+        super().open_page(self.link)
+        text_price = super().find_element(self.__locator, self.__name)
+        return text_price.text.split('\n')[1].replace(',', '')
+
+
 if __name__ == '__main__':
     #open_webpages()
-    graph_data()
+    #graph_data()
+    options = webdriver.ChromeOptions()
+    driver = ch.Chrome(options=options, version_main=144)
+    driver.maximize_window()
+    pagML = BasePage(driver, ruta)
+    precio = pagML.get_price()
+    pagML.close_browser()
+    print(f"Este es el precio obtenido: {precio}")
