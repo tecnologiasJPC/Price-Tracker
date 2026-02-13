@@ -6,6 +6,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as ch
+import pandas as pd
+import matplotlib.pyplot as plt
 import datetime
 import sqlite3
 import time
@@ -48,5 +50,28 @@ def open_webpages():    # open the webpage to get the price of the product in Me
         driver.quit()
 
 
+def graph_data():
+    data = os.path.join(os.path.dirname(__file__), 'datos.db')
+    conn = sqlite3.connect(data)
+
+    table = 'motocicleta'
+    query = f"SELECT * FROM {table}"
+    df = pd.read_sql_query(query, conn)
+    conn.close()
+
+    print("Estas son las columnas leidas")
+    print(df.columns)
+
+    plt.plot(df['fecha'], df['precio'])
+    plt.xlabel('fecha')
+    plt.xticks(rotation=90)
+    plt.ylabel('precio')
+    plt.title(f'Grafica de precio')
+    plt.tight_layout()
+    plt.show()
+
+
+
 if __name__ == '__main__':
-    open_webpages()
+    #open_webpages()
+    graph_data()
