@@ -17,7 +17,7 @@ import numpy as np
 
 # link for the product to be monitored
 ruta = "https://www.mercadolibre.com.mx/motocicleta-chopper-italika-tc-300-negra/up/MLMU3007051693"
-ruta2 = "https://www.mercadolibre.com.mx/apple-macbook-air-m4-mw0w3bza-gris-oscuro-16-gb-256-gb-240-hz-2560-px-x-1664-px-apple-macos-m4-m4-macos-air-m4-air-apple-air-m4-gpu-de-8-nucleos-neural-engine-apple-macbook-air-apple-m4-macbook-air-m4/p/MLM53449012?product_trigger_id=MLM54109556&picker=true&quantity=1"
+ruta2 = "https://www.amazon.com.mx/dp/B07G7CHRQY/?coliid=I3MMYSO5HGSFQM&colid=3AZBLI2SFHTWM&ref_=list_c_wl_lv_ov_lig_dp_it&th=1&psc=1"
 
 
 def save_data(date: str, price: int):   # save the data in a database file
@@ -28,28 +28,6 @@ def save_data(date: str, price: int):   # save the data in a database file
     cursor.execute("INSERT INTO motocicleta (fecha, precio) VALUES (?, ?)", (date, price))
     connection.commit()
     connection.close()
-
-
-def open_webpages():    # open the webpage to get the price of the product in MercadoLibre
-    moment = datetime.datetime.now()
-    date = str(moment).split('.')[0]
-    service = Service(ChromeDriverManager().install())
-    options = webdriver.ChromeOptions()
-    options.add_argument("--windows-size=1280,720")
-    #options.add_argument("--headless")
-    driver = ch.Chrome(options=options, version_main=144)
-    driver.get(ruta)
-    wait = WebDriverWait(driver, 10)
-    try:
-        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "ui-pdp-price__second-line")))
-        element = driver.find_element(By.CLASS_NAME, "ui-pdp-price__second-line")
-        price = element.text.split('\n')[1].replace(',', '')
-        print(f"This is current price ${int(price)} at {date}")
-        save_data(date, int(price))
-    except TimeoutError:
-        print(f"El tiempo de espera se excedio")
-    finally:
-        driver.quit()
 
 
 def graph_data():
@@ -86,8 +64,10 @@ def graph_data():
 class BasePage:
 
     def __new__(cls, driver, liga):
-        if 'mercadolibre' in liga:
+        if 'mercadolibre.com' in liga:
             return super(BasePage, MercadoLibrePage).__new__(MercadoLibrePage)
+        elif 'amazon.com' in liga:
+            return super(BasePage, AmazonPage).__new__(AmazonPage)
         return super(BasePage, cls).__new__(cls)
 
     def __init__(self, driver, liga):
@@ -128,8 +108,9 @@ class AmazonPage(BasePage):
 
     def get_price(self):
         super().open_page(self.link)
+        super().find_element(By.CLASS_NAME, "a-button-text").click()
         text_price = super().find_element(self.__locator, self.__name)
-        return text_price
+        return text_price.text.replace(',', '')
 
 
 if __name__ == '__main__':
@@ -138,11 +119,13 @@ if __name__ == '__main__':
     options = webdriver.ChromeOptions()
     driver = ch.Chrome(options=options, version_main=144)
     driver.maximize_window()
-    pag1 = MercadoLibrePage(driver, ruta)
+
+    pag1 = BasePage(driver, ruta2)
     price = pag1.get_price()
     pag1.close_browser()
+
     moment = datetime.datetime.now()
     date = str(moment).split('.')[0]
     print(f"Para la fecha {date} el precio obtenido es {price}")
-    save_data(date, int(price))
+    #save_data(date, int(price))
 
