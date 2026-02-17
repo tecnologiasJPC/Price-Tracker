@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import ElementNotInteractableException
+from selenium.common.exceptions import ElementClickInterceptedException
 from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as ch
 import pandas as pd
@@ -17,7 +19,11 @@ import sys
 import numpy as np
 
 products = {'motorcycle': "https://www.mercadolibre.com.mx/motocicleta-chopper-italika-tc-300-negra/up/MLMU3007051693",
-            'ram': "https://www.mercadolibre.com.mx/memoria-ram-ddr5-16gb-5600mts-kingston-fury-impact-1x16gb-laptop-negro-kf556s40ib-16/p/MLM25390982"}
+            'celular': "https://www.mercadolibre.com.mx/asus-rog-phone-9-pro-negro-512gb-16gb-celular-snapdragon-8-elite-telefono-5g-dual-sim-185-hz-gamer-phone-con-gatillos-5800mah-smartphone-android-15/p/MLM46935405",
+            'ram': "https://www.amazon.com.mx/Kingston-Impact-Memoria-Laptop-Capacidad/dp/B09T95TJ1M",
+            'backpack': "https://www.amazon.com.mx/dp/B074PYX59S"}
+
+route = "https://es.aliexpress.com/item/1005002527423374.html?spm=a2g0o.order_list.order_list_main.11.19b1194dhpuB3C&gatewayAdapt=glo2esp"
 
 
 def save_data(product: str, date: str, price: int):   # save the data in a database file
@@ -56,6 +62,7 @@ def graph_data(table):
     plt.ylabel('price')
     plt.title(f'Chart of price')
     plt.tight_layout()
+    plt.grid(True)
     plt.show()
 
 
@@ -66,6 +73,8 @@ class BasePage:
             return super(BasePage, MercadoLibrePage).__new__(MercadoLibrePage)
         elif 'amazon.com' in liga:
             return super(BasePage, AmazonPage).__new__(AmazonPage)
+        elif 'aliexpress.com' in liga:
+            return super(BasePage, AliexpressPage).__new__(AliexpressPage)
         return super(BasePage, cls).__new__(cls)
 
     def __init__(self, driver, liga):
@@ -110,9 +119,25 @@ class AmazonPage(BasePage):
 
     def get_price(self):
         super().open_page(self.link)
-        super().find_element(By.CLASS_NAME, "a-button-text").click()
+        button = super().find_element(By.CLASS_NAME, "a-button-text")
+
+        if button is not None:
+            try:
+                button.click()
+            except ElementClickInterceptedException:
+                pass
         text_price = super().find_element(self.__locator, self.__name)
         return text_price.text.replace(',', '')
+
+
+class AliexpressPage(BasePage):
+    __locator = By.CLASS_NAME
+    __name = "price-default--current--F8OlYIo"
+
+    def get_price(self):
+        super().open_page(self.link)
+        text_price = super().find_element(self.__locator, self.__name)
+        return text_price.text
 
 
 if __name__ == '__main__':
@@ -124,6 +149,12 @@ if __name__ == '__main__':
     options = webdriver.ChromeOptions()
     driver = ch.Chrome(options=options, version_main=144)
     driver.maximize_window()
+
+    #pag1 = BasePage(driver, route)
+    #price = pag1.get_price()
+    #print(f"This is the text obtained {price}")
+    #pag1.close_browser()
+    #sys.exit()
 
     for item in items:
         pag1 = BasePage(driver, products[item])
