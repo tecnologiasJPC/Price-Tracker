@@ -68,6 +68,17 @@ def graph_data(table):
 
 class BasePage:
 
+    @staticmethod
+    def web_page(driv, liga):
+        if 'mercadolibre.com' in liga:
+            return MercadoLibrePage(driv, liga)
+        elif 'amazon.com' in liga:
+            return AmazonPage(driv, liga)
+        elif 'aliexpress.com' in liga:
+            return AliexpressPage(driv, liga)
+        else:
+            return BasePage(driv, liga)
+
     def __new__(cls, driver, liga):
         if 'mercadolibre.com' in liga:
             return super(BasePage, MercadoLibrePage).__new__(MercadoLibrePage)
@@ -150,11 +161,11 @@ if __name__ == '__main__':
     driver = ch.Chrome(options=options, version_main=144)
     driver.maximize_window()
 
-    #pag1 = BasePage(driver, route)
-    #price = pag1.get_price()
-    #print(f"This is the text obtained {price}")
-    #pag1.close_browser()
-    #sys.exit()
+    pag1 = BasePage.web_page(driver, products[items[0]])
+    price = pag1.get_price()
+    print(f"This is the text obtained {price}")
+    pag1.close_browser()
+    sys.exit()
 
     for item in items:
         pag1 = BasePage(driver, products[item])
