@@ -21,13 +21,10 @@ import numpy as np
 products = {'motorcycle': "https://www.mercadolibre.com.mx/motocicleta-chopper-italika-tc-300-negra/up/MLMU3007051693",
             'celular': "https://www.mercadolibre.com.mx/asus-rog-phone-9-pro-negro-512gb-16gb-celular-snapdragon-8-elite-telefono-5g-dual-sim-185-hz-gamer-phone-con-gatillos-5800mah-smartphone-android-15/p/MLM46935405",
             'ram': "https://www.amazon.com.mx/Kingston-Impact-Memoria-Laptop-Capacidad/dp/B09T95TJ1M",
-            'backpack': "https://www.amazon.com.mx/dp/B074PYX59S"}
-
-alis = ["https://es.aliexpress.com/item/1005002527423374.html?spm=a2g0o.order_list.order_list_main.11.19b1194dhpuB3C&gatewayAdapt=glo2esp",
-        "https://es.aliexpress.com/item/1005009592843268.html?spm=a2g0o.order_list.order_list_main.4.27ae194d7aRR4p&gatewayAdapt=glo2esp"]
-
-route = "https://es.aliexpress.com/item/1005002527423374.html?spm=a2g0o.order_list.order_list_main.11.19b1194dhpuB3C&gatewayAdapt=glo2esp"
-route2 = "https://es.aliexpress.com/item/1005009592843268.html?spm=a2g0o.order_list.order_list_main.4.27ae194d7aRR4p&gatewayAdapt=glo2esp"
+            'backpack': "https://www.amazon.com.mx/dp/B074PYX59S",
+            'flange_simple': "https://es.aliexpress.com/item/1005002527423374.html?spm=a2g0o.order_list.order_list_main.11.19b1194dhpuB3C&gatewayAdapt=glo2esp",
+            'flange_black_6': "https://es.aliexpress.com/item/1005009592843268.html?spm=a2g0o.order_list.order_list_main.4.27ae194d7aRR4p&gatewayAdapt=glo2esp",
+            'flange_black_5': "https://es.aliexpress.com/item/1005002439971089.html?spm=a2g0o.order_list.order_list_main.62.27ae194d7aRR4p&gatewayAdapt=glo2esp"}
 
 
 def save_data(product: str, date: str, price: int):   # save the data in a database file
@@ -166,13 +163,6 @@ if __name__ == '__main__':
     options = webdriver.ChromeOptions()
     driver = ch.Chrome(options=options, version_main=144)
     driver.maximize_window()
-
-    for ali in alis:
-        pagina = BasePage.web_page(driver, ali)
-        texto = pagina.get_price()
-        print(f"Este es el precio obtenido {texto}")
-    driver.quit()
-    sys.exit()
 
     for item in items:
         page = BasePage.web_page(driver, products[item])
