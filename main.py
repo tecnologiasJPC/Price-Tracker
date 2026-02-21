@@ -60,7 +60,7 @@ def graph_data(table):
     plt.xlabel('date')
     plt.xticks(rotation=90)
     plt.ylabel('price')
-    plt.title(f'Chart of price')
+    plt.title(f'Chart of {table}')
     plt.tight_layout()
     plt.grid(True)
     plt.show()
@@ -153,7 +153,7 @@ class AliexpressPage(BasePage):
 
 if __name__ == '__main__':
     #open_webpages()
-    #graph_data(list(products.keys())[0])
+    #graph_data(list(products.keys())[2])
     #sys.exit()
 
     items = list(products.keys())
@@ -161,14 +161,8 @@ if __name__ == '__main__':
     driver = ch.Chrome(options=options, version_main=144)
     driver.maximize_window()
 
-    pag1 = BasePage.web_page(driver, products[items[0]])
-    price = pag1.get_price()
-    print(f"This is the text obtained {price}")
-    pag1.close_browser()
-    sys.exit()
-
     for item in items:
-        pag1 = BasePage(driver, products[item])
+        pag1 = BasePage.web_page(driver, products[item])
         price = pag1.get_price()
         moment = datetime.datetime.now()
         date = str(moment).split('.')[0]
