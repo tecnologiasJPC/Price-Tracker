@@ -17,6 +17,7 @@ import time
 import os
 import numpy as np
 
+# list of different products to track, the key is the name of the product and the value is the link to the product page, it can be added more products to track just by adding more key-value pairs to the dictionary
 products = {'motorcycle': "https://www.mercadolibre.com.mx/motocicleta-chopper-italika-tc-300-negra/up/MLMU3007051693",
             'celular': "https://www.mercadolibre.com.mx/asus-rog-phone-9-pro-negro-512gb-16gb-celular-snapdragon-8-elite-telefono-5g-dual-sim-185-hz-gamer-phone-con-gatillos-5800mah-smartphone-android-15/p/MLM46935405",
             'caja_dewalt': "https://www.mercadolibre.com.mx/caja-apilable-con-organizador-dewalt-dwst17803/up/MLMU722706915",
